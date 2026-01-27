@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../models/user_model.dart';
 import '../../themes/app_theme.dart';
+import '../inscricoes/inscricoes_page.dart';
 import 'components/home_bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final UserEvento selectedEvento;
+
+  const HomePage({super.key, required this.selectedEvento});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -33,38 +37,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 800;
 
-        final content = Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _currentLabel,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Você está na seção de $_currentLabel.',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+        final content = _buildContent();
 
         return Scaffold(
           backgroundColor: AppTheme.backgroundColor,
@@ -89,6 +62,45 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildContent() {
+    if (_currentIndex == 2) {
+      return InscricoesPage(evento: widget.selectedEvento);
+    }
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _currentLabel,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Você está na seção de $_currentLabel.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

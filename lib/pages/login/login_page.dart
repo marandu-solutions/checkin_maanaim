@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../themes/app_theme.dart';
 import 'components/custom_text_field.dart';
 import '../../services/auth_service.dart';
-import '../home/home_page.dart';
+import '../listaseminarios/lista_seminarios_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage>
       HapticFeedback.lightImpact();
 
       try {
-        await context.read<AuthService>().login(
+        final user = await context.read<AuthService>().login(
           _emailController.text,
           _passwordController.text,
         );
@@ -82,10 +82,11 @@ class _LoginPageState extends State<LoginPage>
             ),
           );
 
-          // Navegar para a HomePage
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            MaterialPageRoute(
+              builder: (context) => ListaSeminariosPage(user: user),
+            ),
           );
         }
       } catch (e) {

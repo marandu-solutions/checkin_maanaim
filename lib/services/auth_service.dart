@@ -14,6 +14,9 @@ class AuthService {
   User? _currentUser;
   String _deviceId = 'guest';
 
+  User? get currentUser => _currentUser;
+  String get deviceId => _deviceId;
+
   AuthService() {
     _dio.options.baseUrl = baseUrl;
     _dio.options.connectTimeout = const Duration(seconds: 15);

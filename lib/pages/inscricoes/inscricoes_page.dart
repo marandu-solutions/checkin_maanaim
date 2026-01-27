@@ -17,6 +17,7 @@ class InscricoesPage extends StatefulWidget {
 
 class _InscricoesPageState extends State<InscricoesPage> {
   late Future<EventoInscritos> _future;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -76,23 +77,36 @@ class _InscricoesPageState extends State<InscricoesPage> {
                 }
 
                 final inscritos = data.inscritos;
-                final header = _buildHeader(data);
+                final filtered = _searchQuery.trim().isEmpty
+                    ? inscritos
+                    : inscritos
+                          .where(
+                            (i) => (i.nome ?? '').toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ),
+                          )
+                          .toList();
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      header,
-                      const SizedBox(height: 16),
+                      _buildSearchBar(),
+                      const SizedBox(height: 12),
                       Expanded(
                         child: isWide
                             ? Row(
                                 children: [
-                                  Expanded(child: _buildList(inscritos)),
+                                  Expanded(
+                                    child: _buildScrollableContent(
+                                      data,
+                                      filtered,
+                                    ),
+                                  ),
                                 ],
                               )
-                            : _buildList(inscritos),
+                            : _buildScrollableContent(data, filtered),
                       ),
                     ],
                   ),
@@ -190,12 +204,19 @@ class _InscricoesPageState extends State<InscricoesPage> {
     );
   }
 
-  Widget _buildList(List<Inscrito> inscritos) {
+  Widget _buildScrollableContent(
+    EventoInscritos data,
+    List<Inscrito> inscritos,
+  ) {
     return ListView.separated(
-      itemCount: inscritos.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemCount: inscritos.length + 1,
+      separatorBuilder: (context, index) =>
+          index == 0 ? const SizedBox(height: 16) : const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        final inscrito = inscritos[index];
+        if (index == 0) {
+          return _buildHeader(data);
+        }
+        final inscrito = inscritos[index - 1];
         return _buildInscritoCard(inscrito);
       },
     );
@@ -399,6 +420,27 @@ class _InscricoesPageState extends State<InscricoesPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return TextField(
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value;
+        });
+      },
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search),
+        hintText: 'Buscar por nome',
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }

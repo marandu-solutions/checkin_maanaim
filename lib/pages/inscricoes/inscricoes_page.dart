@@ -18,6 +18,9 @@ class InscricoesPage extends StatefulWidget {
 class _InscricoesPageState extends State<InscricoesPage> {
   late Future<EventoInscritos> _future;
   String _searchQuery = '';
+  String? _selectedEquipe;
+  bool _showPastores = false;
+  bool _showParticipantes = false;
 
   @override
   void initState() {
@@ -77,15 +80,41 @@ class _InscricoesPageState extends State<InscricoesPage> {
                 }
 
                 final inscritos = data.inscritos;
-                final filtered = _searchQuery.trim().isEmpty
-                    ? inscritos
-                    : inscritos
-                          .where(
-                            (i) => (i.nome ?? '').toLowerCase().contains(
-                              _searchQuery.toLowerCase(),
-                            ),
-                          )
-                          .toList();
+
+                var filtered = inscritos.where((i) {
+                  final equipe = (i.dscEquipe ?? '').trim().toLowerCase();
+                  final selectedEquipeLower = _selectedEquipe
+                      ?.trim()
+                      .toLowerCase();
+                  final isPastor = (i.isPastor ?? '0') == '1';
+
+                  final matchesEquipe = _selectedEquipe == null
+                      ? true
+                      : equipe == (selectedEquipeLower ?? '');
+
+                  final matchesPastores = !_showPastores
+                      ? true
+                      : isPastor == true;
+
+                  final matchesParticipantes = !_showParticipantes
+                      ? true
+                      : ((i.dscEquipe == null || i.dscEquipe!.trim().isEmpty) &&
+                            !isPastor);
+
+                  return matchesEquipe &&
+                      matchesPastores &&
+                      matchesParticipantes;
+                }).toList();
+
+                if (_searchQuery.trim().isNotEmpty) {
+                  filtered = filtered
+                      .where(
+                        (i) => (i.nome ?? '').toLowerCase().contains(
+                          _searchQuery.toLowerCase(),
+                        ),
+                      )
+                      .toList();
+                }
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -93,6 +122,8 @@ class _InscricoesPageState extends State<InscricoesPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _buildSearchBar(),
+                      const SizedBox(height: 12),
+                      _buildFilters(inscritos),
                       const SizedBox(height: 12),
                       Expanded(
                         child: isWide
@@ -219,6 +250,113 @@ class _InscricoesPageState extends State<InscricoesPage> {
         final inscrito = inscritos[index - 1];
         return _buildInscritoCard(inscrito);
       },
+    );
+  }
+
+  Widget _buildFilters(List<Inscrito> inscritos) {
+    final equipesSet = <String>{};
+    for (final i in inscritos) {
+      final e = i.dscEquipe?.trim();
+      if (e != null && e.isNotEmpty) {
+        equipesSet.add(e);
+      }
+    }
+    final equipes = equipesSet.toList()..sort();
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          ...equipes.map(
+            (equipe) => Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: _buildFilterChip(
+                label: equipe,
+                selected: _selectedEquipe == equipe,
+                color: AppTheme.primaryColor,
+                onTap: () {
+                  setState(() {
+                    if (_selectedEquipe == equipe) {
+                      _selectedEquipe = null;
+                    } else {
+                      _selectedEquipe = equipe;
+                      _showPastores = false;
+                      _showParticipantes = false;
+                    }
+                  });
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: _buildFilterChip(
+              label: 'PASTORES',
+              selected: _showPastores,
+              color: Colors.deepPurple,
+              onTap: () {
+                setState(() {
+                  final newValue = !_showPastores;
+                  _showPastores = newValue;
+                  if (newValue) {
+                    _showParticipantes = false;
+                    _selectedEquipe = null;
+                  }
+                });
+              },
+            ),
+          ),
+          _buildFilterChip(
+            label: 'PARTICIPANTES',
+            selected: _showParticipantes,
+            color: Colors.teal,
+            onTap: () {
+              setState(() {
+                final newValue = !_showParticipantes;
+                _showParticipantes = newValue;
+                if (newValue) {
+                  _showPastores = false;
+                  _selectedEquipe = null;
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool selected,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final background = selected ? color.withOpacity(0.12) : Colors.white;
+    final borderColor = selected ? color : Colors.grey.shade300;
+    final textColor = selected ? color : AppTheme.textPrimary;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+      ),
     );
   }
 

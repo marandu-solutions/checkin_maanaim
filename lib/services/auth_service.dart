@@ -16,6 +16,12 @@ class AuthService {
 
   User? get currentUser => _currentUser;
   String get deviceId => _deviceId;
+  String? get csrfToken => _csrfToken;
+
+  Future<String?> getSecretKey() async {
+    final savedKey = await _storage.read(key: 'secret_key');
+    return savedKey ?? _currentUser?.secretKey;
+  }
 
   AuthService() {
     _dio.options.baseUrl = baseUrl;

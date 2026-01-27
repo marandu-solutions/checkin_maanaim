@@ -26,8 +26,7 @@ class _InscricoesPageState extends State<InscricoesPage> {
   @override
   void initState() {
     super.initState();
-    final auth = context.read<AuthService>();
-    final service = EventoService(auth);
+    final service = context.read<EventoService>();
     final id = widget.evento.id?.toString() ?? '';
     _future = service.getInscritos(id);
   }

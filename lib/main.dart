@@ -3,11 +3,17 @@ import 'package:provider/provider.dart';
 import 'pages/login/login_page.dart';
 import 'themes/app_theme.dart';
 import 'services/auth_service.dart';
+import 'services/evento_service.dart';
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [Provider<AuthService>(create: (_) => AuthService())],
+      providers: [
+        Provider<AuthService>(create: (_) => AuthService()),
+        ProxyProvider<AuthService, EventoService>(
+          update: (_, auth, __) => EventoService(auth),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

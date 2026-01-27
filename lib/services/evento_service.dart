@@ -8,6 +8,9 @@ class EventoService {
   final Dio _dio;
   final AuthService _authService;
 
+  // Cache em memória: ID do evento -> Dados
+  final Map<String, EventoInscritos> _cache = {};
+
   EventoService(this._authService)
     : _dio = Dio(
         BaseOptions(
@@ -21,7 +24,16 @@ class EventoService {
         ),
       );
 
-  Future<EventoInscritos> getInscritos(String idEvento) async {
+  Future<EventoInscritos> getInscritos(
+    String idEvento, {
+    bool forceRefresh = false,
+  }) async {
+    // Se já tiver em cache e não for forçado, retorna do cache
+    if (!forceRefresh && _cache.containsKey(idEvento)) {
+      debugPrint('Retornando inscritos do cache para o evento $idEvento');
+      return _cache[idEvento]!;
+    }
+
     try {
       final deviceId = _authService.deviceId;
 
@@ -59,7 +71,9 @@ class EventoService {
       }
 
       if (data is Map<String, dynamic>) {
-        return EventoInscritos.fromJson(data);
+        final result = EventoInscritos.fromJson(data);
+        _cache[idEvento] = result; // Salva no cache
+        return result;
       }
 
       throw Exception('Formato inesperado de resposta ao listar inscritos.');
@@ -77,6 +91,25 @@ class EventoService {
     } catch (e) {
       debugPrint('Erro inesperado em getInscritos: $e');
       rethrow;
+    }
+  }
+
+  void updateInscritoPresenteLocal(String idEvento, String idInscrito) {
+    if (_cache.containsKey(idEvento)) {
+      final dados = _cache[idEvento]!;
+      final index = dados.inscritos.indexWhere((i) => i.id == idInscrito);
+
+      if (index != -1) {
+        final inscrito = dados.inscritos[index];
+        // Atualiza apenas se ainda não estiver presente
+        if (!inscrito.presente) {
+          dados.inscritos[index] = inscrito.copyWith(
+            participou: '1',
+            lidoAt: DateTime.now().toString(), // Atualiza timestamp localmente
+          );
+          debugPrint('Inscrito $idInscrito marcado como presente localmente.');
+        }
+      }
     }
   }
 }

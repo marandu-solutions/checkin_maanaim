@@ -36,8 +36,8 @@ class EventoInscritos {
       lastUpdateTime: json['last_update_time']?.toString(),
       inscritos: json['inscritos'] is List
           ? (json['inscritos'] as List)
-              .map((e) => Inscrito.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => Inscrito.fromJson(e as Map<String, dynamic>))
+                .toList()
           : <Inscrito>[],
     );
   }
@@ -92,6 +92,56 @@ class Inscrito {
     this.isPastor,
   });
 
+  Inscrito copyWith({
+    String? id,
+    String? visitanteId,
+    String? idToken,
+    String? leitoNumero,
+    String? leitoPosicao,
+    String? leitoQuartoNumero,
+    String? participou,
+    String? lidoAt,
+    String? equipeId,
+    String? numAssento,
+    String? seminarioId,
+    String? dscAuditorio,
+    String? dscAlojamento,
+    String? imgFotoNome,
+    String? nome,
+    String? dscLocal,
+    String? documento,
+    String? sigla,
+    String? dscClasse,
+    String? dscEquipe,
+    String? codTipoObreiro,
+    String? isPastor,
+  }) {
+    return Inscrito(
+      id: id ?? this.id,
+      visitanteId: visitanteId ?? this.visitanteId,
+      idToken: idToken ?? this.idToken,
+      leitoNumero: leitoNumero ?? this.leitoNumero,
+      leitoPosicao: leitoPosicao ?? this.leitoPosicao,
+      leitoQuartoNumero: leitoQuartoNumero ?? this.leitoQuartoNumero,
+      participou: participou ?? this.participou,
+      lidoAt: lidoAt ?? this.lidoAt,
+      equipeId: equipeId ?? this.equipeId,
+      numAssento: numAssento ?? this.numAssento,
+      seminarioId: seminarioId ?? this.seminarioId,
+      dscAuditorio: dscAuditorio ?? this.dscAuditorio,
+      dscAlojamento: dscAlojamento ?? this.dscAlojamento,
+      imgFotoNome: imgFotoNome ?? this.imgFotoNome,
+      nome: nome ?? this.nome,
+      dscLocal: dscLocal ?? this.dscLocal,
+      documento: documento ?? this.documento,
+      sigla: sigla ?? this.sigla,
+      dscClasse: dscClasse ?? this.dscClasse,
+      dscEquipe: dscEquipe ?? this.dscEquipe,
+      codTipoObreiro: codTipoObreiro ?? this.codTipoObreiro,
+      isPastor: isPastor ?? this.isPastor,
+    );
+  }
+
   bool get presente => participou == '1';
 
   factory Inscrito.fromJson(Map<String, dynamic> json) {
@@ -121,4 +171,3 @@ class Inscrito {
     );
   }
 }
-

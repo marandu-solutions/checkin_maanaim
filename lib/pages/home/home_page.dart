@@ -4,6 +4,7 @@ import '../../themes/app_theme.dart';
 import '../inscricoes/inscricoes_page.dart';
 import '../estatisticas/estatisticas_page.dart';
 import '../listaseminarios/lista_seminarios_page.dart';
+import '../leitura/leitura_page.dart';
 import 'components/home_bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -90,23 +91,30 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    if (_currentIndex == 2) {
-      if (_selectedEvento == null) {
-        return Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text(
-                'Selecione um evento na aba Eventos para ver as inscrições.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
+    if (_selectedEvento == null && (_currentIndex == 1 || _currentIndex == 2)) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Selecione um evento na aba Eventos para continuar.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppTheme.textSecondary,
               ),
             ),
           ),
-        );
-      }
+        ),
+      );
+    }
 
+    if (_currentIndex == 1) {
+      return LeituraPage(evento: _selectedEvento!);
+    }
+
+    if (_currentIndex == 2) {
       return InscricoesPage(evento: _selectedEvento!);
     }
 

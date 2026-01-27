@@ -1,18 +1,94 @@
 import 'package:flutter/material.dart';
+import '../../themes/app_theme.dart';
+import 'components/home_bottom_nav_bar.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+
+  String get _currentLabel {
+    switch (_currentIndex) {
+      case 0:
+        return 'Eventos';
+      case 1:
+        return 'Leitura';
+      case 2:
+        return 'Inscrições';
+      case 3:
+        return 'Estatísticas';
+      default:
+        return '';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home'), centerTitle: true),
-      body: const Center(
-        child: Text(
-          'Hello World',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 800;
+
+        final content = Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _currentLabel,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Você está na seção de $_currentLabel.',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          appBar: AppBar(
+            backgroundColor: AppTheme.primaryColor,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: true,
+            title: const Text(
+              'Check-in',
+              style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+            ),
+          ),
+          body: isWide ? Row(children: [Expanded(child: content)]) : content,
+          bottomNavigationBar: HomeBottomNavBar(
+            currentIndex: _currentIndex,
+            onItemSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 }

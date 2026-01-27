@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
 import '../../themes/app_theme.dart';
 import '../inscricoes/inscricoes_page.dart';
+import '../estatisticas/estatisticas_page.dart';
 import '../listaseminarios/lista_seminarios_page.dart';
 import 'components/home_bottom_nav_bar.dart';
 
@@ -9,11 +10,7 @@ class HomePage extends StatefulWidget {
   final User user;
   final UserEvento? selectedEvento;
 
-  const HomePage({
-    super.key,
-    required this.user,
-    this.selectedEvento,
-  });
+  const HomePage({super.key, required this.user, this.selectedEvento});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -103,10 +100,7 @@ class _HomePageState extends State<HomePage> {
               child: Text(
                 'Selecione um evento na aba Eventos para ver as inscrições.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
               ),
             ),
           ),
@@ -114,6 +108,10 @@ class _HomePageState extends State<HomePage> {
       }
 
       return InscricoesPage(evento: _selectedEvento!);
+    }
+
+    if (_currentIndex == 3) {
+      return EstatisticasPage(evento: _selectedEvento);
     }
 
     return Center(

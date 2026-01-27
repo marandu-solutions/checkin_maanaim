@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
 import '../../themes/app_theme.dart';
 import '../inscricoes/inscricoes_page.dart';
+import '../listaseminarios/lista_seminarios_page.dart';
 import 'components/home_bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
-  final UserEvento selectedEvento;
+  final User user;
+  final UserEvento? selectedEvento;
 
-  const HomePage({super.key, required this.selectedEvento});
+  const HomePage({
+    super.key,
+    required this.user,
+    this.selectedEvento,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,6 +21,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  UserEvento? _selectedEvento;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedEvento = widget.selectedEvento;
+  }
 
   String get _currentLabel {
     switch (_currentIndex) {
@@ -65,9 +78,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _onEventoSelected(UserEvento evento) {
+    setState(() {
+      _selectedEvento = evento;
+      _currentIndex = 2;
+    });
+  }
+
   Widget _buildContent() {
+    if (_currentIndex == 0) {
+      return ListaSeminariosPage(
+        user: widget.user,
+        onEventoSelected: _onEventoSelected,
+      );
+    }
+
     if (_currentIndex == 2) {
-      return InscricoesPage(evento: widget.selectedEvento);
+      if (_selectedEvento == null) {
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: const Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Text(
+                'Selecione um evento na aba Eventos para ver as inscrições.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return InscricoesPage(evento: _selectedEvento!);
     }
 
     return Center(

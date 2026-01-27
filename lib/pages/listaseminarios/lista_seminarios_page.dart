@@ -5,8 +5,13 @@ import '../home/home_page.dart';
 
 class ListaSeminariosPage extends StatelessWidget {
   final User user;
+  final ValueChanged<UserEvento>? onEventoSelected;
 
-  const ListaSeminariosPage({super.key, required this.user});
+  const ListaSeminariosPage({
+    super.key,
+    required this.user,
+    this.onEventoSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +60,17 @@ class ListaSeminariosPage extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              HomePage(selectedEvento: evento),
-                        ),
-                      );
+                      if (onEventoSelected != null) {
+                        onEventoSelected!(evento);
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                HomePage(user: user, selectedEvento: evento),
+                          ),
+                        );
+                      }
                     },
                     child: Card(
                       elevation: 3,

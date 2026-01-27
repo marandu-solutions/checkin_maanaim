@@ -157,7 +157,7 @@ class _InscricoesPageState extends State<InscricoesPage> {
           if (dataInicio.isNotEmpty) ...[
             const SizedBox(height: 2),
             Text(
-              dataInicio,
+              _formatDateBr(dataInicio),
               style: const TextStyle(fontSize: 13, color: Colors.white70),
             ),
           ],
@@ -348,7 +348,7 @@ class _InscricoesPageState extends State<InscricoesPage> {
                         inscrito.lidoAt!.isNotEmpty) ...[
                       const SizedBox(width: 8),
                       Text(
-                        inscrito.lidoAt!,
+                        _formatTimeBr(inscrito.lidoAt!),
                         style: const TextStyle(
                           fontSize: 11,
                           color: AppTheme.textSecondary,
@@ -401,6 +401,44 @@ class _InscricoesPageState extends State<InscricoesPage> {
         ],
       ),
     );
+  }
+
+  DateTime? _parseDateTime(String raw) {
+    var value = raw.trim();
+    if (value.isEmpty) return null;
+    DateTime? dt = DateTime.tryParse(value);
+    if (dt == null && value.contains(' ')) {
+      dt = DateTime.tryParse(value.replaceFirst(' ', 'T'));
+    }
+    return dt;
+  }
+
+  String _formatDateBr(String raw) {
+    try {
+      final parsed = _parseDateTime(raw);
+      if (parsed == null) return raw;
+      final dt = parsed.toLocal();
+      String twoDigits(int n) => n.toString().padLeft(2, '0');
+      final date =
+          '${twoDigits(dt.day)}/${twoDigits(dt.month)}/${dt.year.toString().padLeft(4, '0')}';
+      return date;
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  String _formatTimeBr(String raw) {
+    try {
+      final parsed = _parseDateTime(raw);
+      if (parsed == null) return raw;
+      final dt = parsed.toLocal();
+      String twoDigits(int n) => n.toString().padLeft(2, '0');
+      final time =
+          '${twoDigits(dt.hour)}:${twoDigits(dt.minute)}:${twoDigits(dt.second)}';
+      return time;
+    } catch (_) {
+      return raw;
+    }
   }
 
   String _buildIniciais(String? nome) {

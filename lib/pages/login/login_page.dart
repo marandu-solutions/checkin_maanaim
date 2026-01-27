@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../themes/app_theme.dart';
 import 'components/custom_text_field.dart';
 import '../../services/auth_service.dart';
-import '../listaseminarios/lista_seminarios_page.dart';
+import '../home/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage>
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ListaSeminariosPage(user: user),
+              builder: (context) => HomePage(user: user),
             ),
           );
         }

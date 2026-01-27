@@ -426,7 +426,8 @@ class _InscricoesPageState extends State<InscricoesPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ParticipantePage(inscrito: inscrito),
+              builder: (context) =>
+                  ParticipantePage(inscrito: inscrito, evento: widget.evento),
             ),
           );
         },

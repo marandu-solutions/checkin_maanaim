@@ -361,6 +361,61 @@ class _InscricoesPageState extends State<InscricoesPage> {
     );
   }
 
+  Widget _buildInscritoIcon(Inscrito inscrito) {
+    IconData icon;
+    Color color;
+    String tooltip;
+
+    final isPastor = (inscrito.isPastor ?? '0') == '1';
+    final equipe = (inscrito.dscEquipe ?? '').trim().toUpperCase();
+
+    if (isPastor) {
+      icon = Icons.supervisor_account; // Representando liderança/terno
+      color = Colors.black;
+      tooltip = 'Pastor';
+    } else if (equipe.isNotEmpty) {
+      color = Colors.lightGreen; // Cor padrão para equipes (Verde Claro)
+      switch (equipe) {
+        case 'APOIO':
+          icon = Icons.event_seat; // Carregar cadeiras/mesas
+          break;
+        case 'COMUNICAÇÃO':
+          icon = Icons.campaign;
+          break;
+        case 'COZINHA':
+          icon = Icons.soup_kitchen; // Panela/Cozinha
+          break;
+        case 'GRUPO DE LOUVOR':
+          icon = Icons.music_note;
+          break;
+        case 'LIMPEZA':
+          icon = Icons.cleaning_services;
+          break;
+        case 'LIVRARIA':
+          icon = Icons.menu_book;
+          break;
+        case 'SAÚDE':
+          icon = Icons.local_hospital;
+          break;
+        case 'SEGURANÇA':
+          icon = Icons.local_police;
+          break;
+        default:
+          icon = Icons.group_work;
+      }
+      tooltip = equipe;
+    } else {
+      icon = Icons.portrait; // Retrato / Perfil padrão
+      color = Colors.green[900]!; // Verde bem verde, puxado pro escuro
+      tooltip = 'Participante';
+    }
+
+    return Tooltip(
+      message: tooltip,
+      child: Icon(icon, size: 20, color: color),
+    );
+  }
+
   Widget _buildInscritoCard(Inscrito inscrito) {
     final iniciais = _buildIniciais(inscrito.nome);
     final presente = inscrito.presente;
@@ -426,15 +481,23 @@ class _InscricoesPageState extends State<InscricoesPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      inscrito.nome ?? 'Sem nome',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.textPrimary,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            inscrito.nome ?? 'Sem nome',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        _buildInscritoIcon(inscrito),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Row(

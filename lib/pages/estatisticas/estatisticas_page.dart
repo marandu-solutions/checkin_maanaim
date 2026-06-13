@@ -93,22 +93,15 @@ class _EstatisticasPageState extends State<EstatisticasPage> {
       equipeMap[equipeKey] = (equipeMap[equipeKey] ?? 0) + 1;
     }
 
-    // Ordenar equipes por quantidade (top 5 + outros)
+    // Ordenar equipes por quantidade
     final sortedEntries = equipeMap.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     final topEquipes = <String, int>{};
-    int outrosCount = 0;
 
+    // Pega TODAS as equipes, sem limitar a "top N" e sem agrupar em "Outros"
     for (int i = 0; i < sortedEntries.length; i++) {
-      if (i < 6) {
-        topEquipes[sortedEntries[i].key] = sortedEntries[i].value;
-      } else {
-        outrosCount += sortedEntries[i].value;
-      }
-    }
-    if (outrosCount > 0) {
-      topEquipes['Outros'] = outrosCount;
+      topEquipes[sortedEntries[i].key] = sortedEntries[i].value;
     }
 
     _totalInscritos = inscritos.length;
@@ -888,6 +881,45 @@ class _TeamDistributionChartState extends State<_TeamDistributionChart> {
       final widgetSize = isTouched ? 40.0 : 30.0;
       final value = widget.porEquipe.values.elementAt(i);
       final color = _colors[i % _colors.length];
+      final equipeName = widget.porEquipe.keys.elementAt(i).toUpperCase();
+
+      IconData iconData = Icons.person; // Padrão
+      if (equipeName != 'SEM EQUIPE' && equipeName != 'OUTROS') {
+        switch (equipeName) {
+          case 'APOIO':
+            iconData = Icons.event_seat;
+            break;
+          case 'COMUNICAÇÃO':
+            iconData = Icons.campaign;
+            break;
+          case 'COZINHA':
+            iconData = Icons.soup_kitchen;
+            break;
+          case 'GRUPO DE LOUVOR':
+            iconData = Icons.music_note;
+            break;
+          case 'LIMPEZA':
+            iconData = Icons.cleaning_services;
+            break;
+          case 'LIVRARIA':
+            iconData = Icons.menu_book;
+            break;
+          case 'SAÚDE':
+            iconData = Icons.local_hospital;
+            break;
+          case 'SEGURANÇA':
+            iconData = Icons.local_police;
+            break;
+          case 'CANTINA':
+            iconData = Icons.attach_money;
+            break;
+          case 'SECRETARIA':
+            iconData = Icons.badge; // ou Icons.folder_shared
+            break;
+          default:
+            iconData = Icons.group_work;
+        }
+      }
 
       return PieChartSectionData(
         color: color,
@@ -899,7 +931,7 @@ class _TeamDistributionChartState extends State<_TeamDistributionChart> {
           fontWeight: FontWeight.bold,
           color: const Color(0xffffffff),
         ),
-        badgeWidget: _Badge(Icons.person, size: widgetSize, borderColor: color),
+        badgeWidget: _Badge(iconData, size: widgetSize, borderColor: color),
         badgePositionPercentageOffset: 1.2,
         titlePositionPercentageOffset: 0.55,
       );

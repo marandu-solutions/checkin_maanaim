@@ -22,6 +22,7 @@ class _InscricoesPageState extends State<InscricoesPage> {
   String? _selectedEquipe;
   bool _showPastores = false;
   bool _showParticipantes = false;
+  bool _showFaltantes = false;
 
   void _loadData() {
     final service = context.read<EventoService>();
@@ -105,9 +106,14 @@ class _InscricoesPageState extends State<InscricoesPage> {
                       : ((i.dscEquipe == null || i.dscEquipe!.trim().isEmpty) &&
                             !isPastor);
 
+                  final matchesFaltantes = !_showFaltantes
+                      ? true
+                      : i.presente == false;
+
                   return matchesEquipe &&
                       matchesPastores &&
-                      matchesParticipantes;
+                      matchesParticipantes &&
+                      matchesFaltantes;
                 }).toList();
 
                 if (_searchQuery.trim().isNotEmpty) {
@@ -312,20 +318,36 @@ class _InscricoesPageState extends State<InscricoesPage> {
               },
             ),
           ),
-          _buildFilterChip(
-            label: 'PARTICIPANTES',
-            selected: _showParticipantes,
-            color: Colors.teal,
-            onTap: () {
-              setState(() {
-                final newValue = !_showParticipantes;
-                _showParticipantes = newValue;
-                if (newValue) {
-                  _showPastores = false;
-                  _selectedEquipe = null;
-                }
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: _buildFilterChip(
+              label: 'PARTICIPANTES',
+              selected: _showParticipantes,
+              color: Colors.teal,
+              onTap: () {
+                setState(() {
+                  final newValue = !_showParticipantes;
+                  _showParticipantes = newValue;
+                  if (newValue) {
+                    _showPastores = false;
+                    _selectedEquipe = null;
+                  }
+                });
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: _buildFilterChip(
+              label: 'FALTANTES',
+              selected: _showFaltantes,
+              color: Colors.redAccent,
+              onTap: () {
+                setState(() {
+                  _showFaltantes = !_showFaltantes;
+                });
+              },
+            ),
           ),
         ],
       ),
@@ -402,6 +424,12 @@ class _InscricoesPageState extends State<InscricoesPage> {
           break;
         case 'SEGURANÇA':
           icon = Icons.local_police;
+          break;
+        case 'CANTINA':
+          icon = Icons.attach_money;
+          break;
+        case 'SECRETARIA':
+          icon = Icons.badge;
           break;
         default:
           icon = Icons.group_work;

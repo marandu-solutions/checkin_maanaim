@@ -33,7 +33,9 @@ class _ParticipantePageState extends State<ParticipantePage> {
   }
 
   Future<void> _confirmarPresenca() async {
-    if (_inscrito.seminarioId == null) {
+    final idEvento = widget.evento.id?.toString() ?? _inscrito.seminarioId?.toString() ?? '';
+
+    if (idEvento.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro: ID do evento não encontrado.'),
@@ -50,8 +52,11 @@ class _ParticipantePageState extends State<ParticipantePage> {
       final checkinService = CheckinService(context.read<AuthService>());
       final eventoService = context.read<EventoService>();
 
-      final idEvento = widget.evento.id.toString();
-      final idInscrito = _inscrito.id!.trim();
+      final idInscrito = _inscrito.id?.trim() ?? _inscrito.visitanteId?.trim() ?? '';
+      
+      if (idInscrito.isEmpty) {
+        throw Exception('ID do inscrito não encontrado.');
+      }
 
       // 1. Atualização Otimista e Cache Local
       final novoInscrito = _inscrito.copyWith(participou: '1');

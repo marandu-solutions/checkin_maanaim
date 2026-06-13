@@ -80,7 +80,10 @@ class CheckinService {
         "secret_key": secretKey,
       };
 
-      final route = 'confirmainscricoes/$idEvento';
+      // O evento precisa ser processado como INT também caso seja uma string.
+      // E remover espaços em branco para não bugar a rota REST
+      final idEventoLimpo = idEvento.trim();
+      final route = 'confirmainscricoes/$idEventoLimpo';
       debugPrint(
         'Enviando checkin para rota: $route com payload: ${jsonEncode(payload)}',
       );

@@ -251,8 +251,39 @@ class AuthService {
         throw Exception('Dados de usuário inválidos na resposta.');
       }
       throw Exception('Falha na autenticação.');
+    } on DioException catch (e) {
+      debugPrint('Erro no processo de Login (DioException): ${e.response?.statusCode}');
+      if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
+        throw Exception('Login ou senha incorretos.');
+      }
+      
+      if (e.response?.data != null) {
+        final data = e.response!.data;
+        if (data is Map) {
+          if (data.containsKey('msg')) {
+            throw Exception(data['msg']);
+          } else if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          } else if (data.containsKey('error')) {
+            throw Exception(data['error']);
+          }
+        } else if (data is String) {
+          try {
+            final decoded = jsonDecode(data);
+            if (decoded is Map) {
+              if (decoded.containsKey('msg')) throw Exception(decoded['msg']);
+              if (decoded.containsKey('message')) throw Exception(decoded['message']);
+              if (decoded.containsKey('error')) throw Exception(decoded['error']);
+            }
+          } catch (_) {
+            // Se falhar ao decodificar, ignora
+          }
+        }
+        throw Exception('Erro ${e.response?.statusCode}: ${data.toString().length > 100 ? data.toString().substring(0, 100) + "..." : data.toString()}');
+      }
+      throw Exception('Falha na requisição: ${e.message}');
     } catch (e) {
-      debugPrint('Erro no processo de Login: $e');
+      debugPrint('Erro geral no processo de Login: $e');
       rethrow;
     }
   }

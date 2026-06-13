@@ -23,12 +23,16 @@ class _InscricoesPageState extends State<InscricoesPage> {
   bool _showPastores = false;
   bool _showParticipantes = false;
 
-  @override
-  void initState() {
-    super.initState();
+  void _loadData() {
     final service = context.read<EventoService>();
     final id = widget.evento.id?.toString() ?? '';
     _future = service.getInscritos(id);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
   @override
@@ -422,14 +426,22 @@ class _InscricoesPageState extends State<InscricoesPage> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
                   ParticipantePage(inscrito: inscrito, evento: widget.evento),
             ),
           );
+
+          // Quando voltar da tela do participante, recarrega a lista
+          // Isso pega os dados atualizados do cache (já que o checkin salva localmente)
+          if (mounted) {
+            setState(() {
+              _loadData();
+            });
+          }
         },
         borderRadius: BorderRadius.circular(20),
         child: Container(

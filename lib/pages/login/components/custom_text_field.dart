@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final IconData icon;
   final bool isPassword;
@@ -19,6 +19,19 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -33,25 +46,41 @@ class CustomTextField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        validator: validator,
+        controller: widget.controller,
+        obscureText: _obscureText,
+        keyboardType: widget.keyboardType,
+        validator: widget.validator,
         style: const TextStyle(
           fontSize: 16,
           color: Colors.black87,
           fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
-          labelText: label,
+          labelText: widget.label,
           labelStyle: TextStyle(
             color: Colors.grey[600],
             fontSize: 14,
           ),
           prefixIcon: Icon(
-            icon,
+            widget.icon,
             color: Theme.of(context).primaryColor,
           ),
+          suffixIcon: widget.isPassword
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: Colors.grey[600],
+                  ),
+                )
+              : null,
+          suffixIconColor: Colors.grey[600],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

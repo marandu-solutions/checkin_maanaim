@@ -211,6 +211,10 @@ class _LeituraPageState extends State<LeituraPage> {
     });
   }
 
+  Future<void> _switchCamera() async {
+    await _scannerController.switchCamera();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isScanning) {
@@ -245,12 +249,9 @@ class _LeituraPageState extends State<LeituraPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          centerTitle: true,
+          automaticallyImplyLeading: false,
           elevation: 0,
-          title: const Text(
-            'Check-in',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          toolbarHeight: 0,
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.white,
           bottom: PreferredSize(
@@ -332,6 +333,22 @@ class _LeituraPageState extends State<LeituraPage> {
               }
             }
           },
+        ),
+        Positioned(
+          top: 24,
+          right: 24,
+          child: Material(
+            color: Colors.black54,
+            shape: const CircleBorder(),
+            child: IconButton(
+              onPressed: _switchCamera,
+              tooltip: 'Trocar camera',
+              icon: const Icon(
+                Icons.cameraswitch_rounded,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
         // Overlay indicativo
         Positioned(

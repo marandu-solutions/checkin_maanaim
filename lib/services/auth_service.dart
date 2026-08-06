@@ -8,7 +8,7 @@ class AuthService {
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  static const String baseUrl = 'https://checkin.marandusolutions.com.br';
+  static const String baseUrl = 'https://checkin.marandusolutions.com';
 
   String? _csrfToken;
   User? _currentUser;
@@ -252,11 +252,13 @@ class AuthService {
       }
       throw Exception('Falha na autenticação.');
     } on DioException catch (e) {
-      debugPrint('Erro no processo de Login (DioException): ${e.response?.statusCode}');
+      debugPrint(
+        'Erro no processo de Login (DioException): ${e.response?.statusCode}',
+      );
       if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
         throw Exception('Login ou senha incorretos.');
       }
-      
+
       if (e.response?.data != null) {
         final data = e.response!.data;
         if (data is Map) {
@@ -272,14 +274,18 @@ class AuthService {
             final decoded = jsonDecode(data);
             if (decoded is Map) {
               if (decoded.containsKey('msg')) throw Exception(decoded['msg']);
-              if (decoded.containsKey('message')) throw Exception(decoded['message']);
-              if (decoded.containsKey('error')) throw Exception(decoded['error']);
+              if (decoded.containsKey('message'))
+                throw Exception(decoded['message']);
+              if (decoded.containsKey('error'))
+                throw Exception(decoded['error']);
             }
           } catch (_) {
             // Se falhar ao decodificar, ignora
           }
         }
-        throw Exception('Erro ${e.response?.statusCode}: ${data.toString().length > 100 ? data.toString().substring(0, 100) + "..." : data.toString()}');
+        throw Exception(
+          'Erro ${e.response?.statusCode}: ${data.toString().length > 100 ? data.toString().substring(0, 100) + "..." : data.toString()}',
+        );
       }
       throw Exception('Falha na requisição: ${e.message}');
     } catch (e) {

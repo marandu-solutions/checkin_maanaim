@@ -117,11 +117,12 @@ class _InscricoesPageState extends State<InscricoesPage> {
                 }).toList();
 
                 if (_searchQuery.trim().isNotEmpty) {
+                  final normalizedQuery = _normalizeSearchText(_searchQuery);
                   filtered = filtered
                       .where(
-                        (i) => (i.nome ?? '').toLowerCase().contains(
-                          _searchQuery.toLowerCase(),
-                        ),
+                        (i) => _normalizeSearchText(
+                          i.nome ?? '',
+                        ).contains(normalizedQuery),
                       )
                       .toList();
                 }
@@ -756,5 +757,41 @@ class _InscricoesPageState extends State<InscricoesPage> {
     final primeira = partes.first.characters.first;
     final ultima = partes.last.characters.first;
     return (primeira + ultima).toUpperCase();
+  }
+
+  String _normalizeSearchText(String value) {
+    const accentMap = {
+      'á': 'a',
+      'à': 'a',
+      'ã': 'a',
+      'â': 'a',
+      'ä': 'a',
+      'é': 'e',
+      'è': 'e',
+      'ê': 'e',
+      'ë': 'e',
+      'í': 'i',
+      'ì': 'i',
+      'î': 'i',
+      'ï': 'i',
+      'ó': 'o',
+      'ò': 'o',
+      'õ': 'o',
+      'ô': 'o',
+      'ö': 'o',
+      'ú': 'u',
+      'ù': 'u',
+      'û': 'u',
+      'ü': 'u',
+      'ç': 'c',
+      'ñ': 'n',
+    };
+
+    return value
+        .trim()
+        .toLowerCase()
+        .split('')
+        .map((char) => accentMap[char] ?? char)
+        .join();
   }
 }

@@ -17,7 +17,7 @@ class User {
       secretKey: json['secret_key']?.toString(),
       locais: json['locais'] is List
           ? (json['locais'] as List)
-                .map((e) => UserLocal.fromJson(e as Map<String, dynamic>))
+                .map((e) => UserLocal.fromJson(Map<String, dynamic>.from(e)))
                 .toList()
           : null,
     );
@@ -48,7 +48,7 @@ class UserLocal {
       descricao: json['descricao'],
       eventos: json['eventos'] is List
           ? (json['eventos'] as List)
-                .map((e) => UserEvento.fromJson(e as Map<String, dynamic>))
+                .map((e) => UserEvento.fromJson(Map<String, dynamic>.from(e)))
                 .toList()
           : null,
     );

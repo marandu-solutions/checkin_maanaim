@@ -173,9 +173,10 @@ class AuthService {
           }
         }
 
-        if (data is Map<String, dynamic>) {
+        if (data is Map) {
           try {
-            final user = User.fromJson(data);
+            final userData = Map<String, dynamic>.from(data);
+            final user = User.fromJson(userData);
             _currentUser = user;
 
             if (user.secretKey != null) {
